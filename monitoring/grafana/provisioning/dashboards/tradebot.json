@@ -1,0 +1,82 @@
+{
+  "title": "tradebot",
+  "uid": "tradebot-main",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Portfolio Value",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "tradebot_portfolio_value",
+          "legendFormat": "Portfolio $"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Open Positions",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "tradebot_open_positions",
+          "legendFormat": "Positions"
+        }
+      ],
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Current Regime",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "tradebot_regime_bearish",
+          "legendFormat": "Bearish=1"
+        }
+      ],
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Portfolio Equity Curve",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "tradebot_portfolio_value",
+          "legendFormat": "Equity"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {"unit": "currencyUSD"}
+      },
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4}
+    },
+    {
+      "id": 5,
+      "type": "logs",
+      "title": "Bot Logs",
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{container=\"tradebot\"}",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 12}
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+version: "3.9"
+
+# PAPER TRADING ONLY — do not expose ports beyond 127.0.0.1.
+# Remote access is via Tailscale on TrueNAS.
+
+networks:
+  tradebot_net:
+    driver: bridge
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  loki_data:
+
+services:
+
+  tradebot:
+    image: parabyte-ca/tradebot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tradebot
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /mnt/shared_vol/tradebot/data:/data
+    ports:
+      - "127.0.0.1:8421:8421"    # Prometheus metrics scrape endpoint
+    networks:
+      - tradebot_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8421/metrics"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: tradebot_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - tradebot_net
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: tradebot_grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:8420
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "127.0.0.1:8420:3000"    # Dashboard — port 8420 per ports.md
+    networks:
+      - tradebot_net
+    depends_on:
+      - prometheus
+      - loki
+
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: tradebot_loki
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/config.yml
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks:
+      - tradebot_net
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    container_name: tradebot_promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./monitoring/loki/promtail-config.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - tradebot_net
+    depends_on:
+      - loki

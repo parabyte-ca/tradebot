@@ -1,0 +1,46 @@
+# Core trading framework
+lumibot==3.7.5
+
+# Interactive Brokers async connector
+ib_async==1.0.1
+
+# Data science
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.4.2
+lightgbm==4.3.0
+scipy==1.13.0
+
+# NLP / sentiment
+transformers==4.40.2
+torch==2.3.0
+tokenizers==0.19.1
+
+# Data sources
+alpaca-py==0.25.0
+finnhub-python==2.4.20
+requests==2.31.0
+
+# Scheduling
+apscheduler==3.10.4
+
+# Configuration / env
+python-dotenv==1.0.1
+pydantic==2.7.1
+pydantic-settings==2.2.1
+
+# Monitoring / metrics
+prometheus-client==0.20.0
+python-json-logger==2.0.7
+
+# Database
+sqlalchemy==2.0.30
+
+# HTTP
+httpx==0.27.0
+aiohttp==3.9.5
+
+# Utilities
+pandas-ta==0.3.14b
+pytz==2024.1
+tenacity==8.3.0

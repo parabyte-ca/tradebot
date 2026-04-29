@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+
+scrape_configs:
+  - job_name: "tradebot"
+    static_configs:
+      - targets: ["tradebot:8421"]
+    metrics_path: /metrics
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

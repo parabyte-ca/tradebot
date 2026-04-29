@@ -1,0 +1,43 @@
+# Secrets
+.env
+
+# Data and caches
+data/
+backtest/results/
+*.db
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Models
+*.lgbm
+*.cbm
+*.bin
+
+# Docker
+.docker/
